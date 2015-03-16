@@ -1,5 +1,7 @@
+require 'json'
+
 class JsonToEnv
-  VERSION = "0.1.0"
+  VERSION = "0.2.0"
 
   def self.load(json)
     hash = JSON.parse json
@@ -17,7 +19,14 @@ class JsonToEnv
       end
     end
 
-    envs.each { |k,v| ENV[k] = v unless ENV.has_key? k }
+    envs.each { |k,v| ENV[k] = self.stringify(v) unless ENV.has_key? k }
+  end
+
+  def self.stringify(v)
+    str_value = v
+    str_value = JSON.dump(v) if v.is_a?(Array)
+    str_value = JSON.dump(v) if v.is_a?(Hash)
+    str_value.to_s
   end
 
   def self.load_file(file_path)
